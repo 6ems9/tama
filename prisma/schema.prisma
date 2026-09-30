@@ -1,0 +1,97 @@
+// Prisma Schema for TAMA.DEV
+// SQLite datasource for local storage and simplified deployment
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String   // Hashed password for admin auth
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile?
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline     String
+  subheadline  String
+  bio          String
+  roleTag      String   @default("SENIOR SOFTWARE ENGINEER")
+  email        String
+  githubUrl    String
+  linkedinUrl  String
+  twitterUrl   String?
+  location     String
+  availability String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Project {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  title               String
+  description         String
+  detailedDescription String?
+  technologies        String   // JSON stringified array or comma-separated
+  role                String
+  year                String
+  githubUrl           String?
+  liveUrl             String?
+  featured            Boolean  @default(false)
+  order               Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Experience {
+  id           String   @id @default(cuid())
+  company      String
+  position     String
+  period       String
+  location     String?
+  description  String   // JSON stringified array of bullet points
+  technologies String   // JSON stringified array
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  category  String   // Languages, Backend, Frontend, Database, DevOps, Cloud, Tools
+  name      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Certificate {
+  id            String   @id @default(cuid())
+  name          String
+  issuer        String
+  date          String
+  credentialId  String
+  credentialUrl String
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
